@@ -1,5 +1,6 @@
 import MessageHandler from "./MessageHandler";
 import OneToOneMessageHandler from "./OneToOneMessageHandler";
+import KafkaProducer from "./KafkaProducer";
 
 class HandlerRegister {
   private static instance: HandlerRegister;
@@ -31,8 +32,12 @@ class HandlerRegister {
   public static getHandlerTypes() {
     return Array.from(HandlerRegister.getInstance().handlers.keys());
   }
+
+  public static clearHandlers() {
+    HandlerRegister.getInstance().handlers.clear();
+  }
 }
 
-HandlerRegister.setHandler("oneToOne", new OneToOneMessageHandler());
+HandlerRegister.setHandler("OneToOne", new OneToOneMessageHandler());
 
 export default HandlerRegister;

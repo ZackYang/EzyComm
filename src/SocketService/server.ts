@@ -1,13 +1,15 @@
+require('dotenv').config()
+
 import { WebSocket, WebSocketServer } from 'ws';
 import ConnectionPool from './connectionPool';
+import MessageParser from './messageHandlers/MessageParser';
 
 const wss = new WebSocketServer({ port: 7070 });
 const connectionPool = ConnectionPool.getInstance();
+const logger = require('pino')()
+const messageParser = new MessageParser()
 
 wss.on('connection', (ws: WebSocket, req: any) => {
-  console.log(typeof req);
-  console.log(req.headers);
-
   const userId = req.headers['x-user-id'];
 
   if (!userId) {
@@ -23,11 +25,11 @@ wss.on('connection', (ws: WebSocket, req: any) => {
   ws.on('error', console.error);
 
   ws.on('message', function message(data: string) {
-    console.log('received: %s', data);
-
-    const body = JSON.parse(data);
-
-    console.log(body);
+    try {
+      messageParser.handle(data)
+    } catch (e) {
+      console.error(e);
+    }
   });
 
   ws.send('something');

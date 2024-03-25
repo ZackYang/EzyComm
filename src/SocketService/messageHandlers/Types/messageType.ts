@@ -6,6 +6,6 @@ type MessageType = {
   type: string;
   payloadType: string;
   payload: any;
-} | null;
+}
 
 export { MessageDistnation, MessageType };

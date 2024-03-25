@@ -40,10 +40,6 @@ class ConnectionPool {
     }
   }
 
-  private connectionHeartbeat = (id: string, connection: WebSocket) => {
-    connection
-  }
-
   // This method will add a new connection to the pool
   public addConnection({
     id,

@@ -1,7 +1,7 @@
-import { MessageParseError, MessageParser } from '../messageHandlers/MessageParser';
-import { HandlerRegister } from '../messageHandlers/HandlerRegister';
-import { MessageHandler } from '../messageHandlers/MessageHandler';
-import { MessageType } from '../messageHandlers/Types/messageType';
+import MessageParser, { MessageParseError } from '../../src/SocketService/messageHandlers/MessageParser';
+import HandlerRegister from '../../src/SocketService/messageHandlers/HandlerRegister';
+import MessageHandler from '../../src/SocketService/messageHandlers/MessageHandler';
+import { MessageType } from '../../src/SocketService/messageHandlers/Types/messageType';
 
 describe('MessageParser', () => {
   let mockMessage: string;
@@ -33,16 +33,9 @@ describe('MessageParser', () => {
     expect(() => new MessageParser(invalidMessage)).toThrow(MessageParseError);
   });
 
-  it('should validate the message and throw a MessageParseError if the message is null', () => {
-    const messageParser = new MessageParser(mockMessage);
-    messageParser.messageObject = null;
-
-    expect(() => messageParser.handle()).toThrow(MessageParseError);
-  });
-
   it('should validate the message and throw a MessageParseError if the message type is null', () => {
     const messageParser = new MessageParser(mockMessage);
-    messageParser.messageObject.type = null;
+    messageParser.messageObject.type = '';
 
     expect(() => messageParser.handle()).toThrow(MessageParseError);
   });
