@@ -31,6 +31,7 @@ class MessageParser {
     let distnationHandler: MessageHandler | null = null;
     try {
       messageObject = JSON.parse(message);
+      logger.info(`Parsed message: ${JSON.stringify(messageObject)}`);
     } catch (e) {
       throw new MessageParseError(`Error parsing message: ${e}`);
     }
@@ -38,7 +39,9 @@ class MessageParser {
     // Validate the message
     if (this.validateMessage(messageObject)) {
       distnationHandler = this.getDistnationHandler(messageObject as MessageType);
-      distnationHandler.handle(this.messageObject);
+      logger.info(`Distnation handler: ${distnationHandler.constructor.name}`);
+      distnationHandler.handle(messageObject as MessageType);
+      logger.info(`Message handled: ${JSON.stringify(messageObject)}`);
     }
   }
 

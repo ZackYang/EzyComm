@@ -22,7 +22,7 @@ export default class KafkaProducer {
   private createProducer(): Producer {
     const kafka = new Kafka({
       clientId: process.env.KAFKA_CLIENT_ID || 'socket-service',
-      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092']
+      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094']
     })
 
     return kafka.producer()
@@ -41,33 +41,7 @@ export default class KafkaProducer {
       }
       )
       .catch((e) => {
-        let retryCount = 0;
-        const maxRetries = 50;
-
-        logger.error(`Error sending message to Kafka: ${e}`);
-        logger.info(`Retrying in 10 seconds...`);
-        logger.info(`Retry count: ${retryCount}`);
-
-        const retryInterval = 6000; // milliseconds
-
-        const retry = () => {
-          if (retryCount < maxRetries) {
-            setTimeout(() => {
-              producer.send({
-                topic: topic,
-                messages: [
-                  { value: JSON.stringify(message) }
-                ]
-              })
-                .catch(() => {
-                  retryCount++;
-                  retry();
-                });
-            }, retryInterval);
-          }
-        };
-
-        retry();
+        logger.error(`Error sending message: ${e}`)
       })
   }
 }
