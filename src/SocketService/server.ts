@@ -4,7 +4,12 @@ import { WebSocket, WebSocketServer } from 'ws';
 import ConnectionPool from './connectionPool';
 import MessageParser from './messageHandlers/MessageParser';
 
-const wss = new WebSocketServer({ port: 7070 });
+const port = process.env.SOCKET_PORT || 7070;
+
+console.log('Starting server...');
+console.log(`Listening on port '${port}'`);
+
+const wss = new WebSocketServer({ port: port as number });
 const connectionPool = ConnectionPool.getInstance();
 const logger = require('pino')()
 const messageParser = new MessageParser()

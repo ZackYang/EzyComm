@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "test": "jest ./tests --coverage",
-    "socket-dev": "nodemon src/SocketService/server.ts | pino-pretty"
+    "socket-dev": "nodemon src/SocketService/server.ts | pino-pretty",
+    "start": "node src/index.ts"
   },
   "keywords": [],
   "author": "",
