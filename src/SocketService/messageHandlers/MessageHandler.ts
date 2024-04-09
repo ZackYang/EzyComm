@@ -1,18 +1,27 @@
-import { MessageType } from "./Types/messageType";
-import KafkaProducer from "./KafkaProducer";
+import { MessageType } from "../../lib/Types/messageType";
+import KafkaProducer from "../../lib/Kafka/KafkaProducer";
 
 
 class MessageHandler {
-  public async handle(message: MessageType): Promise<void> {
-    throw new Error("Method not implemented.");
+  public handlerName: string;
+  public topic: string;
+
+  constructor({
+    handlerName,
+    topic
+  }: {
+    handlerName: string;
+    topic: string;
+  }) {
+    this.handlerName = handlerName;
+    this.topic = topic;
   }
 
-  constructor() {
-    this.handle = this.handle.bind(this);
-  }
-
-  private async sendMessage(message: MessageType, topic: string): Promise<void> {
-    return KafkaProducer.sendMessage({ message, topic });
+  public async process(message: MessageType) {
+    await KafkaProducer.sendMessage({
+      message,
+      topic: this.topic
+    });
   }
 }
 

@@ -1,4 +1,4 @@
-import HandlerRegister from '../../src/SocketService/messageHandlers/HandlerRegister';
+import HandlerRegister from '../../src/SocketService/messageHandlers/HandlerPool';
 import MessageHandler from '../../src/SocketService/messageHandlers/MessageHandler';
 
 describe('HandlerRegister', () => {

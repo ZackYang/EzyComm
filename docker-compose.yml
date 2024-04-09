@@ -46,7 +46,7 @@ services:
       kafka:
         condition: service_healthy
     command: |
-      kafka-topics.sh --create --if-not-exists --topic OneToOne --replication-factor=1 --partitions=1 --bootstrap-server kafka-1:9092
+      kafka-topics.sh --create --if-not-exists --topic one-to-one-service --replication-factor=1 --partitions=1 --bootstrap-server kafka-1:9092
 volumes:
   kafka_data:
     driver: local

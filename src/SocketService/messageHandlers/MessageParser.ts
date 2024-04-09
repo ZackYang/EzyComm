@@ -1,6 +1,5 @@
-import OneToOneMessageHandler from "./OneToOneMessageHandler";
-import HandlerRegister from "./HandlerRegister";
-import { MessageDistnation, MessageType } from "./Types/messageType";
+import HandlerPool from "./HandlerPool";
+import { MessageType } from "../../lib/Types/messageType";
 import MessageHandler from "./MessageHandler";
 
 const logger = require('pino')();
@@ -14,39 +13,37 @@ class MessageParseError extends Error {
 }
 
 class MessageParser {
-  messageObject: MessageType = {
-    from: "",
-    to: '',
-    type: '',
-    payloadType: '',
-    payload: '',
-  };
-
-  public handle(message: string) {
+  public handle(userId: string, message: string) {
     logger.info(`Handling message: ${message}`);
 
     let messageObject: MessageType | null = null;
 
     // Try to parse the message
     let distnationHandler: MessageHandler | null = null;
+
     try {
       messageObject = JSON.parse(message);
       logger.info(`Parsed message: ${JSON.stringify(messageObject)}`);
     } catch (e) {
-      throw new MessageParseError(`Error parsing message: ${e}`);
+      logger.error(`Error parsing message: ${e}`);
+    }
+
+    // Assing the user id to the message
+    if (messageObject) {
+      messageObject.from = userId;
     }
 
     // Validate the message
     if (this.validateMessage(messageObject)) {
       distnationHandler = this.getDistnationHandler(messageObject as MessageType);
       logger.info(`Distnation handler: ${distnationHandler.constructor.name}`);
-      distnationHandler.handle(messageObject as MessageType);
+      distnationHandler.process(messageObject as MessageType);
       logger.info(`Message handled: ${JSON.stringify(messageObject)}`);
     }
   }
 
   private getDistnationHandler(messageObject: MessageType): MessageHandler {
-    const handler = HandlerRegister.getHandler(messageObject.type);
+    const handler = HandlerPool.getHandler(messageObject.type);
 
     // If no handler is found, throw an error
     if (!handler) {

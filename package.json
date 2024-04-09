@@ -2,9 +2,13 @@
   "name": "launchpad-communication",
   "version": "0.0.1",
   "description": "",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "test": "jest ./tests --coverage",
     "socket-dev": "nodemon src/SocketService/server.ts | pino-pretty",
+    "one-to-one-dev": "nodemon src/OneToOneService/server.ts | pino-pretty",
     "start": "node src/index.ts"
   },
   "keywords": [],
@@ -24,11 +28,14 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@types/uuid": "^9.0.8",
     "@types/ws": "^8.5.10",
     "dotenv": "^16.4.5",
     "kafkajs": "^2.2.4",
     "nodemon": "^3.1.0",
     "pino": "^8.19.0",
+    "redis": "^4.6.13",
+    "uuid": "^9.0.1",
     "ws": "^8.16.0"
   }
 }

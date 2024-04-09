@@ -1,5 +1,5 @@
 import { Kafka, Producer } from 'kafkajs'
-import { MessageType } from './Types/messageType'
+import { MessageType } from '../Types/messageType'
 
 const logger = require('pino')()
 
