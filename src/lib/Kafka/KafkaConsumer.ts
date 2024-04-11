@@ -15,7 +15,7 @@ export default class KafkaConsumer {
   }) {
     this.consumer = new Kafka({
       clientId: clientId,
-      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094']
+      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092']
     }).consumer({ groupId })
   }
 

@@ -9,7 +9,8 @@
     "test": "jest ./tests --coverage",
     "socket-dev": "nodemon src/SocketService/server.ts | pino-pretty",
     "one-to-one-dev": "nodemon src/OneToOneService/server.ts | pino-pretty",
-    "start": "node src/index.ts"
+    "start-socket": "pm2 start src/SocketService/server.ts",
+    "start-one-to-one": "pm2 start src/OneToOneService/server.ts"
   },
   "keywords": [],
   "author": "",

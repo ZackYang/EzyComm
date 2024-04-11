@@ -19,6 +19,12 @@ RUN apt-get update; apt-get install -y java-11-amazon-corretto-jdk
 # Check if java is installed
 RUN java -version
 
+# Install Redis
+RUN apt-get install -y redis-server
+
+# Define mountable directories.
+VOLUME ["/data"]
+
 # Install Kafka
 USER kafka
 RUN wget https://downloads.apache.org/kafka/3.7.0/kafka_2.12-3.7.0.tgz
@@ -72,6 +78,8 @@ USER node
 RUN npm install --production --silent 
 RUN npm install -g ts-node
 RUN npm install -g pino-pretty
+RUN npm install -g bun
+RUN npm install -g pm2
 COPY . .
 EXPOSE 7070
 

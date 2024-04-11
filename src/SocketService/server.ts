@@ -7,6 +7,8 @@ import ExtWebSocket from './connectionPool/ExtWebSocket';
 import { v4 as uuidv4 } from 'uuid';
 import KafkaConsumer from '../lib/Kafka/KafkaConsumer';
 import { MessageType } from '../lib/Types/messageType';
+import HandlerPool from './messageHandlers/HandlerPool';
+import KafkaAdmin from '../lib/Kafka/KafkaAdmin';
 
 require('./config/initializers/MessageHandlerConfig')
 
@@ -63,6 +65,22 @@ wss.on('connection', (webSocket: WebSocket, req: any) => {
     console.log(`Connection disconnected: ${ws.id}`);
   })
 });
+
+const kafkaAdmin = KafkaAdmin.getInstance()
+
+// check if the 'socket-service' topic exists
+// if it doesn't, create it
+
+kafkaAdmin.checkTopicExists('socket-service')
+  .then((exists) => {
+    if (!exists) {
+      kafkaAdmin.createTopic({
+        topic: 'socket-service',
+        numPartitions: 1,
+        replicationFactor: 1
+      })
+    }
+  })
 
 const kafkaConsumer = KafkaConsumer.getInstance({
   groupId: 'socket-service',

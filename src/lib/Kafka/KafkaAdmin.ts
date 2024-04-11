@@ -8,7 +8,7 @@ export default class KafkaAdmin {
 
   private constructor() {
     this.admin = new Kafka({
-      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094']
+      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092']
     }).admin();
   }
 
@@ -37,9 +37,18 @@ export default class KafkaAdmin {
   // This method is used to check if a topic exists in Kafka
   public async checkTopicExists(topic: string): Promise<boolean> {
     await this.admin.connect();
-    const topicMetadata = await this.admin.fetchTopicMetadata({ topics: [topic] });
-    await this.admin.disconnect();
-    return topicMetadata.topics.length > 0;
+
+    try {
+      const topicMetadata = await this.admin.fetchTopicMetadata({ topics: [topic] });
+
+      await this.admin.disconnect();
+      return topicMetadata.topics.length > 0;
+
+    } catch (e: any) {
+      logger.error(`Error checking if topic (${topic}) exists: ${e} ${e.stack}`);
+      await this.admin.disconnect();
+      return false;
+    }
   }
 
   public static getInstance() {

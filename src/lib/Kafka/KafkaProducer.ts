@@ -22,7 +22,7 @@ export default class KafkaProducer {
   private createProducer(): Producer {
     const kafka = new Kafka({
       clientId: process.env.KAFKA_CLIENT_ID || 'socket-service',
-      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094']
+      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092']
     })
 
     return kafka.producer()
