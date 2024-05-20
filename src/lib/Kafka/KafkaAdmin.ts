@@ -1,60 +1,59 @@
-import { Kafka } from "kafkajs";
+import { Kafka } from 'kafkajs'
 
-const logger = require('pino')();
+import pino from 'pino'
+const logger = pino()
 
 export default class KafkaAdmin {
-  private admin: any;
-  private static instance: KafkaAdmin;
+  private readonly admin: any
+  private static instance: KafkaAdmin
 
-  private constructor() {
+  private constructor () {
     this.admin = new Kafka({
-      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092']
-    }).admin();
+      brokers: process.env.KAFKA_BROKERS?.split(',') ?? ['localhost:9092']
+    }).admin()
   }
 
-  public async createTopic({
+  public async createTopic ({
     topic,
     numPartitions,
     replicationFactor
   }: {
-    topic: string,
-    numPartitions: number,
+    topic: string
+    numPartitions: number
     replicationFactor: number
-  }) {
-    logger.info(`Creating topic: ${topic}`);
-    await this.admin.connect();
+  }): Promise<void> {
+    logger.info(`Creating topic: ${topic}`)
+    await this.admin.connect()
     await this.admin.createTopics({
       topics: [{
         topic,
         numPartitions,
         replicationFactor
       }]
-    });
-    await this.admin.disconnect();
-    logger.info(`Topic created: ${topic}`);
+    })
+    await this.admin.disconnect()
+    logger.info(`Topic created: ${topic}`)
   }
 
   // This method is used to check if a topic exists in Kafka
-  public async checkTopicExists(topic: string): Promise<boolean> {
-    await this.admin.connect();
+  public async checkTopicExists (topic: string): Promise<boolean> {
+    await this.admin.connect()
 
     try {
-      const topicMetadata = await this.admin.fetchTopicMetadata({ topics: [topic] });
+      const topicMetadata = await this.admin.fetchTopicMetadata({ topics: [topic] })
 
-      await this.admin.disconnect();
-      return topicMetadata.topics.length > 0;
-
+      await this.admin.disconnect()
+      return topicMetadata.topics.length > 0
     } catch (e: any) {
-      logger.error(`Error checking if topic (${topic}) exists: ${e} ${e.stack}`);
-      await this.admin.disconnect();
-      return false;
+      logger.error(`Error checking if topic (${topic}) exists: ${e} ${e.stack}`)
+      await this.admin.disconnect()
+      return false
     }
   }
 
-  public static getInstance() {
-    if (!KafkaAdmin.instance) {
-      KafkaAdmin.instance = new KafkaAdmin();
-    }
-    return KafkaAdmin.instance;
+  public static getInstance (): KafkaAdmin {
+    KafkaAdmin.instance = new KafkaAdmin()
+
+    return KafkaAdmin.instance
   }
 }
