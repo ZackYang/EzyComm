@@ -5,7 +5,7 @@ import KafkaProducer from '../lib/Kafka/KafkaProducer'
 
 import pino from 'pino'
 import KafkaAdmin from '../lib/Kafka/KafkaAdmin'
-import { MessageType } from '../lib/Types/messageType'
+import { type MessageType } from '../lib/Types/messageType'
 
 const logger = pino()
 
@@ -40,7 +40,7 @@ KafkaConsumer.getInstance({
   onMessage
 })
 
-function onMessage(message: KafkaMessage) {
+function onMessage (message: KafkaMessage) {
   const payload: MessageType = JSON.parse(message.value?.toString() || '{}')
 
   const to = payload.to

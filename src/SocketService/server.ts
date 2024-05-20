@@ -54,15 +54,19 @@ wss.on('connection', (webSocket: WebSocket, req: any) => {
   })
 
   ws.on('close', () => {
-    ConnectionPool.removeConnection(ws.id)
-
-    console.log(`Connection closed: ${ws.id}`)
+    ConnectionPool.removeConnection(ws.id).then(() => {
+      console.log('Connection removed')
+    }).catch(e => {
+      console.error(e)
+    })
   })
 
   ws.on('disconnect', () => {
-    ConnectionPool.removeConnection(ws.id)
-
-    console.log(`Connection disconnected: ${ws.id}`)
+    ConnectionPool.removeConnection(ws.id).then(() => {
+      console.log('Connection removed')
+    }).catch(e => {
+      console.error(e)
+    })
   })
 })
 
@@ -88,31 +92,37 @@ findOrCreateTopic().then(() => {
   console.error(e)
 })
 
-// const kafkaConsumer = KafkaConsumer.getInstance({
-//   groupId: 'socket-service',
-//   clientId: 'socket-service'
-// })
+const messageHandler = async ({ value }: { value: any }): Promise<void> => {
+  const message: MessageType = JSON.parse(value?.toString() || '{}') as MessageType
+  const { type, from, to, payloadType, payload } = message
 
-// This will consume messages from the 'socket-service' topic
-// and send them to the appropriate user
-// kafkaConsumer.consume({
-//   topic: 'socket-service',
-//   onMessage: async ({ value }) => {
-//     console.log(value?.toString())
+  if (type === 'socket-service') {
+    await ConnectionPool.sentToUser({
+      userId: to,
+      message: JSON.stringify({
+        from,
+        to,
+        type: payloadType,
+        payload
+      })
+    })
+  }
+}
 
-//     const message: MessageType = JSON.parse(value?.toString() || '{}')
-//     const { type, from, to, payloadType, payload } = message
+const listenToKafta = async (): Promise<void> => {
+  const kafkaConsumer = KafkaConsumer.getInstance({
+    groupId: 'socket-service',
+    clientId: 'socket-service'
+  })
 
-//     if (type === 'socket-service') {
-//       ConnectionPool.sentToUser({
-//         userId: to,
-//         message: JSON.stringify({
-//           from,
-//           to,
-//           type: payloadType,
-//           payload
-//         })
-//       })
-//     }
-//   }
-// })
+  await kafkaConsumer.consume({
+    topic: 'socket-service',
+    onMessage: messageHandler // Remove the 'async' keyword from the function declaration
+  })
+}
+
+listenToKafta().then(() => {
+  console.log('Listening to Kafka')
+}).catch((e) => {
+  console.error(e)
+})

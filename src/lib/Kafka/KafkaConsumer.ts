@@ -1,31 +1,30 @@
-import { Kafka, Consumer, KafkaMessage } from 'kafkajs'
-
-const logger = require('pino')()
+import type { Consumer, KafkaMessage } from 'kafkajs'
+import { Kafka } from 'kafkajs' // Import the 'Kafka' class from 'kafkajs' package
 
 export default class KafkaConsumer {
-  private consumer: Consumer
+  private readonly consumer: Consumer
   private static instance: KafkaConsumer
 
-  constructor({
+  constructor ({
     groupId,
     clientId
   }: {
-    groupId: string,
+    groupId: string
     clientId: string
   }) {
     this.consumer = new Kafka({
-      clientId: clientId,
-      brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092']
+      clientId,
+      brokers: process.env.KAFKA_BROKERS?.split(',') ?? ['localhost:9092']
     }).consumer({ groupId })
   }
 
-  public async consume({
+  public async consume ({
     topic,
     onMessage
   }: {
-    topic: string,
+    topic: string
     onMessage: (message: KafkaMessage) => void
-  }) {
+  }): Promise<void> {
     await this.consumer.connect()
     await this.consumer.subscribe({ topic })
     await this.consumer.run({
@@ -35,16 +34,14 @@ export default class KafkaConsumer {
     })
   }
 
-  public static getInstance({
+  public static getInstance ({
     groupId,
     clientId
   }: {
-    groupId: string,
+    groupId: string
     clientId: string
-  }) {
-    if (!KafkaConsumer.instance) {
-      KafkaConsumer.instance = new KafkaConsumer({ groupId, clientId })
-    }
+  }): KafkaConsumer {
+    KafkaConsumer.instance = new KafkaConsumer({ groupId, clientId })
     return KafkaConsumer.instance
   }
 }
